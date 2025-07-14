@@ -1,4 +1,5 @@
 from google.adk.agents import Agent
+from .sub_agents.data_agent.agent import data_agent
 
 def get_stock_price(stock_symbol: float) -> dict[str, str]:
     """Get the current price of a stock"""
@@ -18,6 +19,7 @@ root_agent = Agent(
     name="trading_advisor_agent",
     description="An AI agent that analyzes stock data and provides trading recommendations",
     tools=[get_stock_price],
+    sub_agents=[data_agent],
     model="gemini-2.0-flash",
     
 )
