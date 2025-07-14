@@ -12,7 +12,7 @@ The system uses a coordinated network of **autonomous AI agents**, each with spe
 
 ### Core Agents
 
-1. **Gap-Up Detection Agent** - Autonomously identifies small-cap stocks with significant gap-up movements
+1. **Gap-Up Listing Agent** - Autonomously identifies small-cap stocks with significant gap-up movements
 2. **Data Agent** - Independently gathers comprehensive historical data (premarket, regular hours, after-hours)
 3. **Trade Planning Agent** - Makes autonomous decisions on trading strategies based on historical patterns
 4. **Risk Assessment Agent** - Provides independent risk analysis and dynamic position sizing
@@ -52,26 +52,36 @@ stock-ai-agent/
 │   ├── agent.py
 │   ├── prompt.py
 │   └── sub_agents/
+│       ├── gap_up_listing_agent/
+│       │   ├── __init__.py
+│       │   ├── agent.py
+│       │   └── prompt.py
 │       ├── data_agent/
 │       │   ├── __init__.py
 │       │   ├── data_agent.py
 │       │   └── prompt.py
-│       ├── execution_agent/
+│       ├── trade_planning_agent/
 │       │   ├── __init__.py
-│       │   ├── execution_agent.py
+│       │   ├── agent.py
 │       │   └── prompt.py
 │       ├── risk_agent/
 │       │   ├── __init__.py
-│       │   ├── risk_agent.py
+│       │   ├── agent.py
 │       │   └── prompt.py
-│       ├── trade_planning_agent/
+│       ├── backtesting_agent/
 │       │   ├── __init__.py
-│       │   ├── trade_planning_agent.py
+│       │   ├── agent.py
 │       │   └── prompt.py
-│       └── backtesting_agent/
+│       ├── execution_agent/
+│       │   ├── __init__.py
+│       │   ├── agent.py
+│       │   └── prompt.py
+│       └── trades_history_agent/
 │           ├── __init__.py
-│           ├── backtesting_agent.py
+│           ├── agent.py
 │           └── prompt.py
+├── assets/
+│   └── stock-ai-agent-architecture.png
 ├── deployment/
 │   ├── deploy.py.txt
 │   └── test_deployment.py.txt
@@ -175,8 +185,8 @@ Each agent can be configured through their respective prompt files in the `sub_a
 - Portfolio heat limits
 
 ### Data Sources
-- Yahoo Finance (free tier)
-- Alpha Vantage (API key required)
+- Polygon API (API Key Required)
+- Alpaca API (real-time data/API Key Required)
 - Interactive Brokers (real-time data)
 
 ## 📈 Usage Examples
@@ -186,11 +196,12 @@ Each agent can be configured through their respective prompt files in the `sub_a
 from trading_advisor.agent import root_agent
 
 # Initialize the multi-agent system
-agent_system = root_agent
+cd trading_advisor
+adk web (for ADK web UI)
+        or 
+from root directory 
+adk run . (for ADK cli input)
 
-# Start the trading system
-agent_system.run()
-```
 
 ### Individual Agent Usage
 ```python
