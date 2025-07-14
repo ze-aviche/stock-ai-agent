@@ -1,5 +1,6 @@
 from google.adk.agents import Agent
 from sub_agents.sequential_agent.agent import sequential_agent
+from prompt import TRADING_ADVISOR_SYSTEM_PROMPT
 
 
 def get_stock_price(stock_symbol: float) -> dict[str, str]:
@@ -19,6 +20,7 @@ def get_stock_price(stock_symbol: float) -> dict[str, str]:
 root_agent = Agent(
     name="trading_advisor_agent",
     description="An AI agent that analyzes stock data and provides trading recommendations",
+    instruction=TRADING_ADVISOR_SYSTEM_PROMPT,
     tools=[get_stock_price],
     sub_agents=[sequential_agent],
     model="gemini-2.0-flash",
