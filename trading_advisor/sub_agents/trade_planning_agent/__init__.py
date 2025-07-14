@@ -1,1 +1,1 @@
-from .agent import trading_planning_agent
+from .agent import trade_planning_agent
