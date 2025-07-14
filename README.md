@@ -20,6 +20,8 @@ The system uses a coordinated network of **autonomous AI agents**, each with spe
 6. **Execution Agent** - Makes real-time execution decisions through Interactive Brokers with precision
 7. **Trades History Agent** - Queries database for historical trade data and provides performance insights
 
+![Stock AI Agent System Architecture](assets/stock-ai-agent-architecture.png)
+
 ## 🚀 Key Features
 
 - **Autonomous Decision-Making** - Each agent operates independently with specialized expertise
