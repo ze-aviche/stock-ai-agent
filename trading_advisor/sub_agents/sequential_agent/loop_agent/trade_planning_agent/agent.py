@@ -6,7 +6,7 @@ from google.adk import Agent
 
 MODEL = "gemini-2.5-pro"
 
-trading_planning_agent = Agent(
+trade_planning_agent = Agent(
     model=MODEL,
     instruction= prompt.TRADING_AGENT_PROMPT,
     name="trading_planning_agent",

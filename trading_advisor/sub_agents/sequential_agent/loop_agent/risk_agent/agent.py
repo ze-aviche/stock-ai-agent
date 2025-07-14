@@ -15,7 +15,7 @@ risk_agent = LlmAgent(
     name="risk_agent",
     description="An agent that calculates risk",
     instruction=RISK_PROMPT,
-    tools=[google_search],
+    tools=[google_search], # TODO: Add tools
     model=MODEL,
     output_key="risk_assessment",
 )
