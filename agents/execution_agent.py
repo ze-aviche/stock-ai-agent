@@ -1,5 +1,5 @@
 from google.adk.agents import LlmAgent
-from db.trades_db import insert_trade_from_alpaca
+#from db.trades_db import insert_trade_from_alpaca
 from agents.prompts.prompt_execution_agent import EXECUTION_AGENT_PROMPT
 #import alpaca_trade_api as tradeapi
 
