@@ -1,6 +1,6 @@
 from google.adk.agents import Agent
-from sub_agents.sequential_agent.agent import sequential_agent
-from prompt import TRADING_ADVISOR_SYSTEM_PROMPT
+from trading_advisor.sub_agents.sequential_agent.agent import sequential_agent
+from trading_advisor.prompt import TRADING_ADVISOR_SYSTEM_PROMPT
 
 
 def get_stock_price(stock_symbol: float) -> dict[str, str]:
