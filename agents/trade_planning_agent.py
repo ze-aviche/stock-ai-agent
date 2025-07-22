@@ -5,8 +5,5 @@ from agents.prompts.prompt_trade_planning_agent import TRADE_PLANNING_AGENT_PROM
 
 trade_planning_agent = SequentialAgent(
     name="trade_planning_agent",
-    #description="Creates a trade plan by analyzing data, risk, and simulation results.",
-    #instruction=TRADE_PLANNING_AGENT_PROMPT,
     sub_agents=[risk_agent, backtesting_agent],
-    #model="gemini-2.0-flash"
 )
