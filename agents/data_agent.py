@@ -1,7 +1,9 @@
-from google.adk.agents import LLMAgent
+from google.adk.agents import LlmAgent
+from agents.prompts.prompt_data_agent import DATA_AGENT_PROMPT
 
-data_agent = LLMAgent(
-    name="Data Agent",
+data_agent = LlmAgent(
+    name="data_agent",
     description="Fetches current and historical market data for a given ticker.",
-    instructions="Use Polygon and Alpaca APIs to get relevant data for analysis."
+    instructions=DATA_AGENT_PROMPT,
+    model="gemini-2.0-flash"
 )

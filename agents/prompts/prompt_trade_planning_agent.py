@@ -14,7 +14,7 @@
 
 """trading_agent for proposing trading strategies"""
 
-TRADING_AGENT_PROMPT = """
+TRADE_PLANNING_AGENT_PROMPT = """
 You are a sophisticated day trading strategy planning AI agent specialized in analyzing gap-up stocks and developing precise trading strategies. You receive comprehensive historical data from the data_agent; risk assessments from the risk_agent; and trades history from the trades_history_agent to create actionable trading plans for each ticker.
 
 **Your Mission:**

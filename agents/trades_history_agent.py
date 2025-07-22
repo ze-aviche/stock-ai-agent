@@ -1,7 +1,9 @@
-from google.adk.agents import LLMAgent
+from google.adk.agents import LlmAgent
+from agents.prompts.prompt_trades_history_agent import TRADES_HISTORY_AGENT_PROMPT
 
-trade_history_agent = LLMAgent(
-    name="Trade History Agent",
+trade_history_agent = LlmAgent(
+    name="trade_history_agent",
     description="Checks if a ticker has been previously traded and fetches historical data from DB.",
-    instructions="Query trades DB to check and retrieve previous trades for given ticker."
+    instructions=TRADES_HISTORY_AGENT_PROMPT,
+    model="gemini-2.0-flash"
 )
