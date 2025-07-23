@@ -1,7 +1,7 @@
 from polygon import RESTClient
 import os
 from config.api_keys import POLYGON_API_KEY
-
+from db.ticker_details_db import init_ticker_details_db, insert_or_update_ticker
 
 def get_gap_up_list():
     #POLYGON_API_KEY = api_keys.POLYGON_API_KEY
@@ -25,10 +25,13 @@ def get_gap_up_list():
         elif hasattr(item, "symbol"):
             ticker = getattr(item, "symbol", None)
         if ticker:
-            details = polygon_client.get_ticker_details(ticker)
-            issue_type = details.get("type")
-            if issue_type == "CS":
-                all_tickers.append(ticker)
+            try:
+                details = polygon_client.get_ticker_details(ticker)
+                issue_type = details.type
+                if issue_type == "CS":
+                    all_tickers.append(ticker)
+            except Exception as e:
+                continue
     print("All tickers:", all_tickers)
     return all_tickers
 
@@ -37,21 +40,28 @@ def get_ticker_details(ticker_list):
     print("POLYGON_API_KEY:", POLYGON_API_KEY)
     polygon_client = RESTClient(POLYGON_API_KEY)
     details_list = []
+    init_ticker_details_db() 
     for ticker in ticker_list:
         try:
             # Fetch ticker details from Polygon
             details = polygon_client.get_ticker_details(ticker)
-            # details is likely a dict; extract relevant fields
-            print("details:", details)
-            sector = details.get("sic_description")
-            market_cap = details.get("market_cap")
-            #avg_vol = details.get("avg_vol") or details.get("average_volume")
-            details_list.append({
+            name = details.name
+            sic_description = details.sic_description
+            market_cap = details.market_cap
+            shares_outstanding = details.share_class_shares_outstanding
+            list_date = details.list_date
+            
+            details_dict = {
                 "ticker": ticker,
-                "sector": sector,
+                "name": name,
                 "market_cap": market_cap,
-                #"avg_volume": avg_vol
-            })
+                "sic_description": sic_description,
+                "list_date": list_date,
+                "shares_outstanding": shares_outstanding,
+            }
+            details_list.append(details_dict)
+            insert_or_update_ticker(details_dict)
+
         except Exception as e:
             print(f"Error fetching details for {ticker}: {e}")
     print("Ticker details:", details_list)
