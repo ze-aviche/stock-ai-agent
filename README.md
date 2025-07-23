@@ -46,48 +46,42 @@ The system uses a coordinated network of **autonomous AI agents**, each with spe
 ## 📁 Project Structure
 
 ```
-stock-ai-agent/
-├── trading_advisor/
-│   ├── __init__.py
+trading-advisor/
+├── agents/
 │   ├── agent.py
-│   ├── prompt.py
-│   └── sub_agents/
-│       ├── gap_up_listing_agent/
-│       │   ├── __init__.py
-│       │   ├── agent.py
-│       │   └── prompt.py
-│       ├── data_agent/
-│       │   ├── __init__.py
-│       │   ├── data_agent.py
-│       │   └── prompt.py
-│       ├── trade_planning_agent/
-│       │   ├── __init__.py
-│       │   ├── agent.py
-│       │   └── prompt.py
-│       ├── risk_agent/
-│       │   ├── __init__.py
-│       │   ├── agent.py
-│       │   └── prompt.py
-│       ├── backtesting_agent/
-│       │   ├── __init__.py
-│       │   ├── agent.py
-│       │   └── prompt.py
-│       ├── execution_agent/
-│       │   ├── __init__.py
-│       │   ├── agent.py
-│       │   └── prompt.py
-│       └── trades_history_agent/
-│           ├── __init__.py
-│           ├── agent.py
-│           └── prompt.py
-├── assets/
-│   └── stock-ai-agent-architecture.png
-├── deployment/
-│   ├── deploy.py.txt
-│   └── test_deployment.py.txt
+│   ├── backtesting_agent.py
+│   ├── data_agent.py
+│   ├── execution_agent.py
+│   ├── gap_up_listing_agent.py
+│   ├── risk_agent.py
+│   ├── trade_planning_agent.py
+│   ├── trades_history_agent.py
+│   └── prompts/
+│       ├── prompt_backtesting_agent.py
+│       ├── prompt_data_agent.py
+│       ├── prompt_execution_agent.py
+│       ├── prompt_gap_up_listing_agent.py
+│       ├── prompt_risk_agent.py
+│       ├── prompt_trade_planning_agent.py
+│       ├── prompt_trades_history_agent.py
+│       └── prompt_trading_advisor.py
+├── api_helper/
+│   ├── alpaca_api_helper.py
+│   ├── polygon_api_helper.py
+├── config/
+├── db/
+│   ├── ticker_details_db.py
+│   ├── init_trades_db.py
+│   ├── trades_db.py
+│   └── ticker_details.db
+├── eval/
+├── main.py
+├── README.md
 ├── tests/
 │   └── test_agents.py.txt
-└── README.md
+└── trading_advisor/
+    └── sub_agents/
+        └── trade_planning_agent/
 ```
 
 ## 🚀 Getting Started
@@ -113,15 +107,30 @@ stock-ai-agent/
    pip install ibapi  # Interactive Brokers API
    pip install pandas numpy matplotlib seaborn
    pip install yfinance alpha_vantage  # Data sources
+   pip install absl-py  # For absl.flags and absl.app
+   pip install python-dotenv  # For .env file support
+   pip install google-cloud-aiplatform  # For Vertex AI
    ```
 
-3. **Set up environment variables**
+3. **Set up Google Cloud authentication**
+   - Install the [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) if you haven't already.
+   - Authenticate your local environment:
+     ```bash
+     gcloud auth application-default login
+     ```
+   - (Optional) Set your project and region:
+     ```bash
+     gcloud config set project YOUR_PROJECT_ID
+     gcloud config set ai/region YOUR_REGION
+     ```
+
+4. **Set up environment variables**
    ```bash
    cp .env.example .env
    # Edit .env with your API keys and broker credentials
    ```
 
-4. **Configure Interactive Brokers**
+5. **Configure Interactive Brokers**
    - Set up TWS or IB Gateway
    - Configure API connections
    - Set appropriate permissions
@@ -292,3 +301,14 @@ For support and questions:
 ---
 
 **Built with ❤️ for the quantitative finance community**
+
+## 🛠️ Troubleshooting
+
+- **ImportError: No module named 'absl'**
+  - Run: `pip install absl-py`
+- **ImportError: No module named 'db' or 'api_helper'**
+  - Make sure you run scripts from the project root using `python -m ...` syntax.
+- **google.auth.exceptions.DefaultCredentialsError: Your default credentials were not found.**
+  - Run: `gcloud auth application-default login` and follow the prompts to authenticate.
+- **sqlite3.OperationalError: near ")": syntax error**
+  - Check for trailing commas in your SQL CREATE TABLE statements.
