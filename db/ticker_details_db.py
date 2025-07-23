@@ -15,7 +15,7 @@ def init_ticker_details_db():
             market_cap INTEGER,
             sic_description TEXT,
             list_date TEXT,
-            share_class_shares_outstanding INTEGER,
+            share_class_shares_outstanding INTEGER
         )
     ''')
     conn.commit()
@@ -25,14 +25,14 @@ def insert_or_update_ticker(details):
     conn = sqlite3.connect(get_db_path())
     c = conn.cursor()
     c.execute('''
-        INSERT OR REPLACE INTO ticker_details VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        INSERT OR REPLACE INTO ticker_details VALUES (?,?,?,?,?,?)
     ''', (
         details.get('ticker'),
         details.get('name'),
         details.get('market_cap'),
         details.get('sic_description'),
         details.get('list_date'),
-        details.get('share_class_shares_outstanding'),
+        details.get('shares_outstanding')
     ))
     conn.commit()
     conn.close()
