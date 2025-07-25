@@ -10,12 +10,19 @@ vertexai.init(
     project=PROJECT_ID, location=LOCATION, staging_bucket=STAGING_BUCKET
     )
 
+app = AdkApp(
+    name=root_agent,
+    description="A trading advisor that uses AI to analyze market data and make trading decisions.",
+    
+    enable_tracing=True,
+)
+
 remote_app = agent_engines.create(
-    agent_engine=root_agent,
+    agent_engine=app,
     requirements=[
         "google-cloud-aiplatform[adk, agent-engines]"
-    ]
-    
+    ], 
+    extra_packages=["./"],    
 )
 
 

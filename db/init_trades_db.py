@@ -12,7 +12,7 @@ def init_trades_db(db_path="trades.db"):
             action TEXT NOT NULL,
             price REAL NOT NULL,
             quantity INTEGER DEFAULT 0,
-            date TEXT NOT NULL
+            timestamp TEXT NOT NULL
         )
     """)
 

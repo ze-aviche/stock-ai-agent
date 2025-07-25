@@ -1,5 +1,5 @@
 from google.adk.agents import LlmAgent
-#from db.trades_db import insert_trade_from_alpaca
+from db.trades_db import insert_trade_from_alpaca
 from agents.prompts.prompt_execution_agent import EXECUTION_AGENT_PROMPT
 #import alpaca_trade_api as tradeapi
 
@@ -53,6 +53,6 @@ def execute_trade(ticker, qty, side="buy"):
     execution_agent = LlmAgent(
     name="execution_agent",
     description="Executes approved trades using Alpaca API.",
-    instructions=EXECUTION_AGENT_PROMPT,
+    instruction=EXECUTION_AGENT_PROMPT,
     model="gemini-2.0-flash"
-)
+    )
