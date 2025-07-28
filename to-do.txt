@@ -1,6 +1,19 @@
-1. From the gap-up list stocks, remove those which are less than $1 and more than $30 - done 
-2. update the market cap to show in Millions - done
-3. add $ volume - can be handled in the chat - done
-3. Add a news service - not needed for now 
-4. Add date in the database to show which date it gapped up 
-5. Add the catalyst info, and if same stock comes next time, keep adding to the column
+From the gap-up list stocks, remove those which are less than $1 and more than $30 - done 
+update the market cap to show in Millions - done
+Add $ volume - can be handled in the chat - done
+Add date in the database to show which date it gapped up  - done 
+Add an agent to wait for user input in between each agent
+Update the prompt of :
+    trade planning agent, 
+    risk agent, 
+    trades history agent, 
+    back testing agent and 
+    execution agent
+Write code for execution agent -alpaca
+Write code for execution agent - DAS Trader
+
+Future Enhancements:
+
+Add the catalyst info, and if same stock comes next time, keep adding to the column - not needed
+Add a news service - not needed for now 
+
