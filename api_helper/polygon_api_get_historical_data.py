@@ -143,6 +143,7 @@ def get_premarket_volume(polygon_client, ticker, date_str):
         end_datetime_est = est_timezone.localize(datetime.strptime(f"{date_str} 09:30", '%Y-%m-%d %H:%M'))
         start_timestamp_utc_ms = int(start_datetime_est.timestamp() * 1000)
         end_timestamp_utc_ms = int(end_datetime_est.timestamp() * 1000)
+        
         aggs_data = polygon_client.list_aggs(
             ticker=ticker,
             multiplier=1,
@@ -152,8 +153,10 @@ def get_premarket_volume(polygon_client, ticker, date_str):
             limit=50000
         )
         aggs_list = list(aggs_data)
+        
         if not aggs_list:
             return 0.0
+        
         premarket_total_volume = sum(bar.volume for bar in aggs_list)
         return premarket_total_volume
     except Exception as e:
@@ -223,7 +226,8 @@ def get_gap_up_day_stats(ticker, polygon_client):
                     'premarket open': premarket_open,
                     'premarket high': premarket_high,
                     'premarket high time': premarket_high_time,
-                    'premarket volume': premarket_volume,
+                    'premarket volume': premarket_volume,  # Keep as raw volume
+                    'premarket $ vol(M)': (premarket_volume * premarket_high / 1000000) if premarket_high else 0,  # Pre-market dollar volume in millions
                     'open': current_day_open,
                     'gap up % at open': gap_up_percent,
                     'day high': current_day_high,
@@ -232,7 +236,8 @@ def get_gap_up_day_stats(ticker, polygon_client):
                     'close price': current_day_close,
                     'closing percent': closing_percent,
                     'afterhours close': afterhours_close,
-                    'total volume': current_day_volume,
+                    'total volume(M)': current_day_volume / 1000000,  # Convert to millions
+                    'total $ vol': (current_day_volume / 1000000) * current_day_high,  # Total dollar volume in millions
                     'VWAP Crosses': vwap_crosses,
                     'Runner/Fader': runner_fader,
                 })

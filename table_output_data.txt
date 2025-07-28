@@ -1,0 +1,1 @@
+Date | previous_day_close | premarket_open | premarket_high | premarket_high_time | premarket_volume | current_day_open | gap_up_percent | current_day_high | current_day_high_time | percent_gap_high | current_day_close | closing_percent | afterhours_close | current_day_volume | vwap | vwap_crosses | runner_fader

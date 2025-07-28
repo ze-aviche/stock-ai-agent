@@ -1,0 +1,3 @@
+if i give you a list of stocks, will you be able to get me the historical data?
+
+HOLO, LMFA, SGN, FTFT, CVM, BMGL, SQFT, LIDR. Give a tabular format.

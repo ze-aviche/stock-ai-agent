@@ -1,5 +1,6 @@
-1. From the gap-up list stocks, remove those which are less than $1 and more than $30
-2. update the market cap to show in Millions
-3. Add a news service
+1. From the gap-up list stocks, remove those which are less than $1 and more than $30 - done 
+2. update the market cap to show in Millions - done
+3. add $ volume - can be handled in the chat - done
+3. Add a news service - not needed for now 
 4. Add date in the database to show which date it gapped up 
 5. Add the catalyst info, and if same stock comes next time, keep adding to the column
