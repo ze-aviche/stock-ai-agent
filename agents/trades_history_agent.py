@@ -4,6 +4,6 @@ from agents.prompts.prompt_trades_history_agent import TRADES_HISTORY_AGENT_PROM
 trade_history_agent = LlmAgent(
     name="trade_history_agent",
     description="Checks if a ticker has been previously traded and fetches historical data from DB.",
-    instructions=TRADES_HISTORY_AGENT_PROMPT,
+    instruction=TRADES_HISTORY_AGENT_PROMPT,
     model="gemini-2.0-flash"
 )

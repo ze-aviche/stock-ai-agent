@@ -2,13 +2,14 @@ From the gap-up list stocks, remove those which are less than $1 and more than $
 update the market cap to show in Millions - done
 Add $ volume - can be handled in the chat - done
 Add date in the database to show which date it gapped up  - done 
+Fix previous day (sunday) - done
 Add an agent to wait for user input in between each agent
 Update the prompt of :
-    trade planning agent, 
-    risk agent, 
-    trades history agent, 
-    back testing agent and 
-    execution agent
+    trade planning agent, - done
+    risk agent, - not needed now 
+    trades history agent, - not needed now
+    back testing agent and - not needed now
+    execution agent - done 
 Write code for execution agent -alpaca
 Write code for execution agent - DAS Trader
 

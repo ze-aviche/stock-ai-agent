@@ -1,34 +1,48 @@
 import sqlite3
+from datetime import datetime
 
 def init_trades_db(db_path="trades.db"):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
-    # Create table
+    # Create comprehensive trades table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS trades (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             ticker TEXT NOT NULL,
-            action TEXT NOT NULL,
-            price REAL NOT NULL,
-            quantity INTEGER DEFAULT 0,
-            timestamp TEXT NOT NULL
+            direction TEXT NOT NULL,  -- 'long' or 'short'
+            action TEXT NOT NULL,     -- 'buy', 'sell', 'stop_loss', 'take_profit'
+            order_type TEXT NOT NULL, -- 'market', 'limit', 'stop'
+            quantity INTEGER NOT NULL,
+            price REAL,               -- NULL for market orders
+            stop_price REAL,          -- For stop orders
+            limit_price REAL,         -- For limit orders
+            status TEXT NOT NULL,     -- 'submitted', 'filled', 'cancelled', 'rejected'
+            order_id TEXT,            -- Alpaca order ID
+            submitted_at TEXT NOT NULL,
+            filled_at TEXT,           -- NULL until filled
+            filled_price REAL,        -- Actual fill price
+            filled_quantity INTEGER,  -- Actual filled quantity
+            commission REAL DEFAULT 0.0,
+            notes TEXT,               -- Additional notes
+            created_at TEXT NOT NULL DEFAULT (datetime('now'))
         )
     """)
 
-    # Insert sample data
-    cursor.executemany("""
-        INSERT INTO trades (ticker, action, price, quantity, date)
-        VALUES (?, ?, ?, ?, ?)
-    """, [
-        ("AAPL", "buy", 170.0, 10, "2024-06-01"),
-        ("TSLA", "sell", 620.0, 5, "2024-06-15"),
-        ("MSFT", "buy", 300.5, 20, "2024-07-01")
-    ])
+    # Create index for faster queries
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_trades_ticker 
+        ON trades(ticker)
+    """)
+    
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_trades_timestamp 
+        ON trades(submitted_at)
+    """)
 
     conn.commit()
     conn.close()
-    print(f"✅ trades.db initialized with sample data.")
+    print(f"✅ trades.db initialized with comprehensive structure.")
 
 if __name__ == "__main__":
     init_trades_db()

@@ -163,6 +163,210 @@ def get_premarket_volume(polygon_client, ticker, date_str):
         print(f"Error fetching pre-market data for {ticker} on {date_str}: {e}")
         return 0.0
 
+def get_intraday_volume_analysis(ticker, polygon_client, date_str):
+    """
+    Analyzes volume patterns throughout the trading day for pattern recognition.
+    """
+    try:
+        est_timezone = pytz.timezone('America/New_York')
+        start_datetime_est = est_timezone.localize(datetime.strptime(f"{date_str} 09:30", '%Y-%m-%d %H:%M'))
+        end_datetime_est = est_timezone.localize(datetime.strptime(f"{date_str} 16:00", '%Y-%m-%d %H:%M'))
+        start_timestamp_utc_ms = int(start_datetime_est.timestamp() * 1000)
+        end_timestamp_utc_ms = int(end_datetime_est.timestamp() * 1000)
+        
+        aggs_data = polygon_client.list_aggs(
+            ticker=ticker,
+            multiplier=5,  # 5-minute bars for volume analysis
+            timespan='minute',
+            from_=start_timestamp_utc_ms,
+            to=end_timestamp_utc_ms,
+            limit=50000
+        )
+        aggs_list = list(aggs_data)
+        
+        if not aggs_list:
+            return None
+        
+        # Analyze volume patterns
+        morning_volume = sum(bar.volume for bar in aggs_list[:12])  # First hour (9:30-10:30)
+        midday_volume = sum(bar.volume for bar in aggs_list[12:60])  # 10:30-2:30
+        afternoon_volume = sum(bar.volume for bar in aggs_list[60:])  # 2:30-4:00
+        
+        total_volume = morning_volume + midday_volume + afternoon_volume
+        
+        # Volume spikes (bars with 2x average volume)
+        avg_volume = total_volume / len(aggs_list) if aggs_list else 0
+        volume_spikes = [bar for bar in aggs_list if bar.volume > avg_volume * 2]
+        
+        return {
+            'morning_volume': morning_volume,
+            'midday_volume': midday_volume,
+            'afternoon_volume': afternoon_volume,
+            'total_volume': total_volume,
+            'volume_spikes_count': len(volume_spikes),
+            'avg_volume': avg_volume,
+            'volume_distribution': {
+                'morning_pct': (morning_volume / total_volume * 100) if total_volume > 0 else 0,
+                'midday_pct': (midday_volume / total_volume * 100) if total_volume > 0 else 0,
+                'afternoon_pct': (afternoon_volume / total_volume * 100) if total_volume > 0 else 0
+            }
+        }
+    except Exception as e:
+        print(f"Error analyzing intraday volume for {ticker} on {date_str}: {e}")
+        return None
+
+def get_price_action_patterns(ticker, polygon_client, date_str):
+    """
+    Analyzes price action patterns for pattern recognition.
+    """
+    try:
+        est_timezone = pytz.timezone('America/New_York')
+        start_datetime_est = est_timezone.localize(datetime.strptime(f"{date_str} 09:30", '%Y-%m-%d %H:%M'))
+        end_datetime_est = est_timezone.localize(datetime.strptime(f"{date_str} 16:00", '%Y-%m-%d %H:%M'))
+        start_timestamp_utc_ms = int(start_datetime_est.timestamp() * 1000)
+        end_timestamp_utc_ms = int(end_datetime_est.timestamp() * 1000)
+        
+        aggs_data = polygon_client.list_aggs(
+            ticker=ticker,
+            multiplier=1,  # 1-minute bars for detailed analysis
+            timespan='minute',
+            from_=start_timestamp_utc_ms,
+            to=end_timestamp_utc_ms,
+            limit=50000
+        )
+        aggs_list = list(aggs_data)
+        
+        if not aggs_list:
+            return None
+        
+        # Get daily summary for open/close
+        try:
+            daily_summary = polygon_client.get_daily_open_close_agg(
+                ticker=ticker,
+                date=date_str,
+                adjusted="true",
+            )
+            open_price = daily_summary.open
+            close_price = daily_summary.close
+        except:
+            open_price = aggs_list[0].open
+            close_price = aggs_list[-1].close
+        
+        # Calculate price movements
+        high_price = max(bar.high for bar in aggs_list)
+        low_price = min(bar.low for bar in aggs_list)
+        
+        # Pattern analysis
+        open_to_high_pct = ((high_price - open_price) / open_price * 100) if open_price else 0
+        open_to_low_pct = ((low_price - open_price) / open_price * 100) if open_price else 0
+        open_to_close_pct = ((close_price - open_price) / open_price * 100) if open_price else 0
+        high_to_low_range = ((high_price - low_price) / open_price * 100) if open_price else 0
+        
+        # Determine pattern type
+        if open_to_close_pct > 2 and open_to_high_pct > 5:
+            pattern_type = "RUNNER"
+        elif open_to_close_pct < -3 or (open_to_high_pct > 3 and open_to_close_pct < 0):
+            pattern_type = "FADER"
+        elif high_to_low_range < 2:
+            pattern_type = "CONSOLIDATION"
+        else:
+            pattern_type = "NEUTRAL"
+        
+        return {
+            'open_price': open_price,
+            'close_price': close_price,
+            'high_price': high_price,
+            'low_price': low_price,
+            'open_to_high_pct': open_to_high_pct,
+            'open_to_low_pct': open_to_low_pct,
+            'open_to_close_pct': open_to_close_pct,
+            'high_to_low_range': high_to_low_range,
+            'pattern_type': pattern_type,
+            'volatility': high_to_low_range
+        }
+    except Exception as e:
+        print(f"Error analyzing price action patterns for {ticker} on {date_str}: {e}")
+        return None
+
+def get_historical_pattern_analysis(ticker, polygon_client, days_back=30):
+    """
+    Analyzes historical patterns to determine stock behavior tendencies.
+    """
+    try:
+        end_date = datetime.now().date()
+        start_date = end_date - timedelta(days=days_back)
+        
+        aggs_data = polygon_client.list_aggs(
+            ticker=ticker,
+            multiplier=1,
+            timespan='day',
+            from_=start_date.strftime('%Y-%m-%d'),
+            to=end_date.strftime('%Y-%m-%d'),
+            adjusted='true',
+            limit=10000
+        )
+        aggs_list = list(aggs_data)
+        
+        if not aggs_list:
+            return None
+        
+        # Analyze recent patterns
+        runner_count = 0
+        fader_count = 0
+        consolidation_count = 0
+        high_volume_count = 0
+        low_volume_count = 0
+        
+        total_volume = 0
+        total_days = len(aggs_list)
+        
+        for i in range(1, len(aggs_list)):
+            prev_close = aggs_list[i-1].close
+            curr_open = aggs_list[i].open
+            curr_close = aggs_list[i].close
+            curr_volume = aggs_list[i].volume
+            
+            if prev_close and curr_open and curr_close:
+                gap_pct = ((curr_open - prev_close) / prev_close * 100)
+                close_pct = ((curr_close - curr_open) / curr_open * 100)
+                
+                # Pattern classification
+                if gap_pct > 1:  # Gap up
+                    if close_pct > 2:
+                        runner_count += 1
+                    elif close_pct < -2:
+                        fader_count += 1
+                    else:
+                        consolidation_count += 1
+                
+                # Volume classification
+                if curr_volume > 1000000:  # High volume threshold
+                    high_volume_count += 1
+                elif curr_volume < 100000:  # Low volume threshold
+                    low_volume_count += 1
+                
+                total_volume += curr_volume
+        
+        avg_volume = total_volume / total_days if total_days > 0 else 0
+        
+        return {
+            'total_days': total_days,
+            'runner_count': runner_count,
+            'fader_count': fader_count,
+            'consolidation_count': consolidation_count,
+            'high_volume_count': high_volume_count,
+            'low_volume_count': low_volume_count,
+            'avg_volume': avg_volume,
+            'runner_pct': (runner_count / total_days * 100) if total_days > 0 else 0,
+            'fader_pct': (fader_count / total_days * 100) if total_days > 0 else 0,
+            'consolidation_pct': (consolidation_count / total_days * 100) if total_days > 0 else 0,
+            'high_volume_pct': (high_volume_count / total_days * 100) if total_days > 0 else 0,
+            'low_volume_pct': (low_volume_count / total_days * 100) if total_days > 0 else 0
+        }
+    except Exception as e:
+        print(f"Error analyzing historical patterns for {ticker}: {e}")
+        return None
+
 def get_gap_up_day_stats(ticker, polygon_client):
     """
     Analyzes historical data for a given ticker to identify significant gap-ups.
@@ -245,11 +449,40 @@ def get_gap_up_day_stats(ticker, polygon_client):
 
 def analyze(tickers, polygon_client):
     """
-    Example function to analyze a list of tickers and return gap up stats for each.
+    Enhanced analyze function that provides comprehensive pattern recognition data.
     """
     results = {}
     for ticker in tickers:
-        print(f"Analyzing gap ups for {ticker}...")
+        print(f"Analyzing comprehensive patterns for {ticker}...")
+        
+        # Get basic gap-up stats
         gap_up_days_list = get_gap_up_day_stats(ticker, polygon_client)
-        results[ticker] = gap_up_days_list
+        
+        # Get historical pattern analysis
+        historical_patterns = get_historical_pattern_analysis(ticker, polygon_client)
+        
+        # Get recent detailed analysis (last 5 gap-up days)
+        detailed_analysis = []
+        for gap_day in gap_up_days_list[:5]:  # Analyze last 5 gap-up days
+            date_str = gap_day['date']
+            
+            # Get volume analysis
+            volume_analysis = get_intraday_volume_analysis(ticker, polygon_client, date_str)
+            
+            # Get price action patterns
+            price_patterns = get_price_action_patterns(ticker, polygon_client, date_str)
+            
+            detailed_analysis.append({
+                'date': date_str,
+                'basic_stats': gap_day,
+                'volume_analysis': volume_analysis,
+                'price_patterns': price_patterns
+            })
+        
+        results[ticker] = {
+            'gap_up_days': gap_up_days_list,
+            'historical_patterns': historical_patterns,
+            'detailed_analysis': detailed_analysis
+        }
+    
     return results 

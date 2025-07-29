@@ -6,23 +6,32 @@ import datetime
 
 def get_previous_close_price(ticker, polygon_client):
     """
-    Fetches the previous day's close price for the given ticker using Polygon aggregates endpoint.
+    Fetches the last trading day's close price for the given ticker using Polygon aggregates endpoint.
     Returns the close price as a float, or None if not available.
     """
-    yesterday = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+    # Get last trading day (skip weekends/holidays)
+    today = datetime.datetime.now().date()
+    last_trading_day = today - datetime.timedelta(days=1)
+    
+    # Skip weekends (Saturday = 5, Sunday = 6)
+    while last_trading_day.weekday() >= 5:
+        last_trading_day -= datetime.timedelta(days=1)
+    
+    date_str = last_trading_day.strftime("%Y-%m-%d")
+    print(f"Using last trading day: {date_str} for {ticker}")
+    
     try:
         aggs = polygon_client.get_aggs(
             ticker=ticker,
             multiplier=1,
             timespan="day",
-            from_=yesterday,
-            to=yesterday
+            from_=date_str,
+            to=date_str
         )
         print("aggs: ", aggs)
         if aggs and len(aggs) > 0:
             print("aggs[0].close: ", aggs[0].close)
             return aggs[0].close
-
         else:
             print(f"No previous close found for {ticker}")
             return None
