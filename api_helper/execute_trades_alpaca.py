@@ -314,6 +314,110 @@ def monitor_and_execute(ticker: str, entry_criteria: Dict, exit_criteria: Dict) 
         'quantity': qty
     }
 
+# ADK-Compatible Wrapper Functions (using primitive types)
+def execute_trade_simple(ticker: str, direction: str, quantity: int, entry_price: float, 
+                        stop_loss: float, take_profit: float, entry_trigger: str = "market") -> str:
+    """
+    Simple trade execution function for ADK compatibility
+    Uses primitive types instead of Dict parameters
+    """
+    try:
+        print(f"🚀 Executing trade for {ticker}")
+        print(f"Direction: {direction}")
+        print(f"Quantity: {quantity}")
+        print(f"Entry Price: ${entry_price}")
+        print(f"Stop Loss: ${stop_loss}")
+        print(f"Take Profit: ${take_profit}")
+        print(f"Entry Trigger: {entry_trigger}")
+        
+        # Create entry criteria
+        entry_criteria = {
+            'direction': direction.lower(),
+            'qty': quantity,
+            'entry_price': entry_price,
+            'entry_trigger': entry_trigger
+        }
+        
+        # Create exit criteria
+        exit_criteria = {
+            'direction': direction.lower(),
+            'qty': quantity,
+            'stop_loss': stop_loss,
+            'take_profit': take_profit
+        }
+        
+        # Execute the trade
+        result = monitor_and_execute(ticker, entry_criteria, exit_criteria)
+        
+        if 'error' in result:
+            return f"❌ Trade execution failed: {result['error']}"
+        else:
+            return f"✅ Trade executed successfully: {result}"
+            
+    except Exception as e:
+        return f"❌ Error executing trade: {str(e)}"
+
+def place_simple_market_order(ticker: str, direction: str, quantity: int) -> str:
+    """
+    Place a simple market order for ADK compatibility
+    """
+    try:
+        side = "buy" if direction.lower() == "long" else "sell"
+        result = place_market_order(ticker, quantity, side, direction)
+        
+        if 'error' in result:
+            return f"❌ Market order failed: {result['error']}"
+        else:
+            return f"✅ Market order placed: {side.upper()} {quantity} shares of {ticker}"
+            
+    except Exception as e:
+        return f"❌ Error placing market order: {str(e)}"
+
+def place_simple_limit_order(ticker: str, direction: str, quantity: int, limit_price: float) -> str:
+    """
+    Place a simple limit order for ADK compatibility
+    """
+    try:
+        side = "buy" if direction.lower() == "long" else "sell"
+        result = place_limit_order(ticker, quantity, limit_price, side, direction)
+        
+        if 'error' in result:
+            return f"❌ Limit order failed: {result['error']}"
+        else:
+            return f"✅ Limit order placed: {side.upper()} {quantity} shares of {ticker} at ${limit_price}"
+            
+    except Exception as e:
+        return f"❌ Error placing limit order: {str(e)}"
+
+def place_simple_stop_order(ticker: str, direction: str, quantity: int, stop_price: float) -> str:
+    """
+    Place a simple stop order for ADK compatibility
+    """
+    try:
+        side = "sell" if direction.lower() == "long" else "buy"
+        result = place_stop_order(ticker, quantity, stop_price, side, direction)
+        
+        if 'error' in result:
+            return f"❌ Stop order failed: {result['error']}"
+        else:
+            return f"✅ Stop order placed: {side.upper()} {quantity} shares of {ticker} at ${stop_price}"
+            
+    except Exception as e:
+        return f"❌ Error placing stop order: {str(e)}"
+
+def get_current_price_simple(ticker: str) -> str:
+    """
+    Get current price as string for ADK compatibility
+    """
+    try:
+        price = get_current_price(ticker)
+        if price:
+            return f"${price:.2f}"
+        else:
+            return f"Could not get price for {ticker}"
+    except Exception as e:
+        return f"Error getting price for {ticker}: {str(e)}"
+
 def _check_entry_criteria(current_price: float, criteria: Dict) -> bool:
     """
     Check if entry criteria are met
