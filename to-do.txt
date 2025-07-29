@@ -10,7 +10,7 @@ Update the prompt of :
     trades history agent, - not needed now
     back testing agent and - not needed now
     execution agent - done 
-Write code for execution agent -alpaca
+Write code for execution agent -alpaca -done
 Write code for execution agent - DAS Trader
 
 Future Enhancements:
