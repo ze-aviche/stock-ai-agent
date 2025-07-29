@@ -567,3 +567,50 @@ def example_execution():
 
 if __name__ == "__main__":
     example_execution()
+
+def add_trade_to_continuous_monitoring(ticker: str, direction: str, quantity: int, 
+                                     entry_price: float, stop_loss: float, take_profit: float, 
+                                     entry_trigger: str = "market") -> str:
+    """
+    Add a trade to continuous monitoring service for ADK compatibility
+    """
+    try:
+        from api_helper.continuous_monitor import add_trade_for_monitoring
+        
+        trade_id = add_trade_for_monitoring(
+            ticker=ticker,
+            direction=direction,
+            quantity=quantity,
+            entry_price=entry_price,
+            stop_loss=stop_loss,
+            take_profit=take_profit,
+            entry_trigger=entry_trigger
+        )
+        
+        return f"✅ Trade added to continuous monitoring with ID: {trade_id}"
+        
+    except Exception as e:
+        return f"❌ Error adding trade to monitoring: {str(e)}"
+
+def get_continuous_monitoring_status() -> str:
+    """
+    Get status of continuous monitoring for ADK compatibility
+    """
+    try:
+        from api_helper.continuous_monitor import get_monitoring_status
+        
+        status = get_monitoring_status()
+        
+        result = f"📊 Monitoring Status:\n"
+        result += f"- Active: {status['monitoring']}\n"
+        result += f"- Active Trades: {status['active_trades']}\n"
+        
+        if status['trades']:
+            result += f"- Trades:\n"
+            for trade_id, trade in status['trades'].items():
+                result += f"  • {trade['ticker']} ({trade['direction']}) - {trade['status']}\n"
+        
+        return result
+        
+    except Exception as e:
+        return f"❌ Error getting monitoring status: {str(e)}"

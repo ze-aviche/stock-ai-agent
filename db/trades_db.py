@@ -2,7 +2,7 @@ import sqlite3
 from datetime import datetime
 from typing import Dict, List, Optional
 
-DB_PATH = "trades.db"
+DB_PATH = "db/trades.db"
 
 def log_trade_submission(ticker: str, direction: str, action: str, order_type: str, 
                         quantity: int, price: Optional[float] = None, 
@@ -16,6 +16,10 @@ def log_trade_submission(ticker: str, direction: str, action: str, order_type: s
     cursor = conn.cursor()
     
     current_time = datetime.now().isoformat()
+    
+    # Convert order_id to string if it's a UUID object
+    if order_id is not None:
+        order_id = str(order_id)
     
     cursor.execute("""
         INSERT INTO trades (

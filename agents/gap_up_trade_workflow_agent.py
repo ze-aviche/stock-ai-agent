@@ -10,7 +10,7 @@ gap_up_identification_agent = LlmAgent(
     name="gap_up_identification_agent",
     description="Identifies gap-up tickers using market APIs like Polygon and filters them based on criteria.",
     instruction=GAP_UP_LISTING_AGENT_PROMPT,
-    model="gemini-2.0-flash",
+    model="gemini-2.5-pro",
     tools=[get_gap_up_list, get_ticker_details],
     output_key="identified_gap_up_stocks"
 )
@@ -24,5 +24,5 @@ gap_up_trade_workflow_agent = SequentialAgent(
         data_agent,                   # Step 2: Analyze historical patterns and data
         trade_planning_agent,         # Step 3: Plan trades based on analysis
         execution_agent               # Step 4: Execute trades on Alpaca
-    ],
+    ]
 ) 
